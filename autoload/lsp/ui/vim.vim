@@ -1,3 +1,16 @@
+function! s:copen() abort
+  botright copen
+  let num_line = line('$')
+  if num_line == 1
+    wincmd p
+    cclose
+    call my#util#message#comment#echo('Match number is 1')
+  else
+    call feedkeys("j\<CR>", 'n')
+    call execute('resize ' . min([num_line, 10]))
+  endif
+endfunction
+
 function! s:not_supported(what) abort
     return lsp#utils#error(printf("%s not supported for filetype '%s'", a:what, &filetype))
 endfunction
@@ -216,7 +229,7 @@ function! s:handle_symbol(server, last_command_id, type, data) abort
         call lsp#utils#error('No ' . a:type .' found')
     else
         echo 'Retrieved ' . a:type
-        botright copen
+        call s:copen()
     endif
 endfunction
 
@@ -249,7 +262,7 @@ function! s:handle_location(ctx, server, type, data) abort "ctx = {counter, list
                 call setqflist([])
                 call setqflist(a:ctx['list'])
                 echo 'Retrieved ' . a:type
-                botright copen
+                call s:copen()
             else
                 let l:lines = readfile(l:loc['filename'])
                 if has_key(l:loc,'viewstart') " showing a locationLink
@@ -442,7 +455,7 @@ function! s:handle_call_hierarchy(ctx, server, type, data) abort
             call setqflist([])
             call setqflist(a:ctx['list'])
             echo 'Retrieved ' . a:type
-            botright copen
+            call s:copen()
             if get(a:ctx, 'add_tree', v:false)
                 " move the cursor to the newly added item
                 execute l:pos + 1

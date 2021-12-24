@@ -24,14 +24,14 @@ function! lsp#internal#document_hover#under_cursor#do(options) abort
                 call s:close_floating_window(v:true)
             else
                 call l:doc_win.enter()
-                inoremap <buffer><silent> <Plug>(lsp-float-close) <ESC>:<C-u>call <SID>close_floating_window(v:true)<CR>
+                "inoremap <buffer><silent> <Plug>(lsp-float-close) <ESC>:<C-u>call <SID>close_floating_window(v:true)<CR>
                 nnoremap <buffer><silent> <Plug>(lsp-float-close) :<C-u>call <SID>close_floating_window(v:true)<CR>
                 execute('doautocmd <nomodeline> User lsp_float_focused')
                 if !hasmapto('<Plug>(lsp-float-close)')
                     imap <silent> <buffer> <C-c> <Plug>(lsp-float-close)
                     map  <silent> <buffer> <C-c> <Plug>(lsp-float-close)
-                    imap <silent> <buffer> <Esc> <Plug>(lsp-float-close)
-                    map  <silent> <buffer> <Esc> <Plug>(lsp-float-close)
+                    "imap <silent> <buffer> <Esc> <Plug>(lsp-float-close)
+                    "map  <silent> <buffer> <Esc> <Plug>(lsp-float-close)
                 endif
             endif
             return
@@ -133,6 +133,9 @@ function! s:show_floating_window(server_name, request, response) abort
     let l:doc_win = s:get_doc_win()
     silent! call deletebufline(l:doc_win.get_bufnr(), 1, '$')
     call setbufline(l:doc_win.get_bufnr(), 1, lsp#utils#_split_by_eol(join(l:contents, "\n\n")))
+    let l:content_for_me = substitute(join(l:contents, "\n\n"), '```.\{-} ', '', 'g')
+    let l:content_for_me = substitute(l:content_for_me, ' ```', '', 'g')
+    call my#plugin#lsp#horver#push(l:content_for_me)
 
     " Calculate layout.
     let l:size = l:doc_win.get_size({
@@ -204,14 +207,14 @@ function! s:close_floating_window_on_move(curpos) abort
 endf
 
 function! s:on_opened() abort
-    inoremap <buffer><silent> <Plug>(lsp-float-close) <ESC>:<C-u>call <SID>close_floating_window(v:true)<CR>
+    "inoremap <buffer><silent> <Plug>(lsp-float-close) <ESC>:<C-u>call <SID>close_floating_window(v:true)<CR>
     nnoremap <buffer><silent> <Plug>(lsp-float-close) :<C-u>call <SID>close_floating_window(v:true)<CR>
     execute('doautocmd <nomodeline> User lsp_float_opened')
     if !hasmapto('<Plug>(lsp-float-close)')
         imap <silent> <buffer> <C-c> <Plug>(lsp-float-close)
         map  <silent> <buffer> <C-c> <Plug>(lsp-float-close)
-        imap <silent> <buffer> <Esc> <Plug>(lsp-float-close)
-        map  <silent> <buffer> <Esc> <Plug>(lsp-float-close)
+        "imap <silent> <buffer> <Esc> <Plug>(lsp-float-close)
+        "map  <silent> <buffer> <Esc> <Plug>(lsp-float-close)
     endif
 endfunction
 
